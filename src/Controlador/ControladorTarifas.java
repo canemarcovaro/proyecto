@@ -36,7 +36,7 @@ public class ControladorTarifas implements ActionListener {
     private int numFila;
     private int filaEditar;
     private int band = -1;
-    private boolean band2= false;
+    private boolean band2 = false;
 
     public ControladorTarifas(Tarifas tf, EntidadTarifa et, Tarifa ta, MiModelo mm) {
         this.tf = tf;
@@ -46,29 +46,27 @@ public class ControladorTarifas implements ActionListener {
         this.tf.btnNuevoTar.addActionListener(this);
         this.tf.btnElemTar.addActionListener(this);
         this.tf.btnModTar.addActionListener(this);
-        //this.tf.btnConfirmar.addActionListener(this);
-        this.tf.tablaTarifas.addMouseListener(new MouseAdapter(){
+        this.tf.tablaTarifas.addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mouseClicked(MouseEvent e){
+            public void mouseClicked(MouseEvent e) {
 
                 int fila = tf.tablaTarifas.rowAtPoint(e.getPoint());
 
                 int columna = tf.tablaTarifas.columnAtPoint(e.getPoint());
 
-                if ((fila > -1) && (columna > -1)){
+                if ((fila > -1) && (columna > -1)) {
 
                     tf.btnModTar.setEnabled(true);
                     tf.btnElemTar.setEnabled(true);
-                
+
                 }
             }
         });
     }
 
-    public void cargarTabla(){
-        
-      
+    public void cargarTabla() {
+
         try {
             PreparedStatement ps = null;
 
@@ -77,11 +75,9 @@ public class ControladorTarifas implements ActionListener {
             ResultSet rs = null;
             Conexion conn = new Conexion();
             Connection con;
-        
+
             con = conn.getConect();
-        
-           
-        
+
             String sql = "SELECT id,nombre,precio FROM tarifas";
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
@@ -106,18 +102,18 @@ public class ControladorTarifas implements ActionListener {
         } catch (SQLException ex) {
             Logger.getLogger(ControladorTarifas.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
 
-      }
-
-    
+    }
 
     public void iniciarTarifas() {
 
         tf.setTitle("Tarifas");
         tf.setLocationRelativeTo(null);
         tf.setVisible(true);
-        
+        tf.txtId.setText("");
+        tf.txtNombreTar.setText("");
+        tf.txtPrecio.setText("");
+
         if (band2 == false) {
             cargarTabla();
             band2 = true;
@@ -129,8 +125,6 @@ public class ControladorTarifas implements ActionListener {
         tf.btnGuardarTar.setEnabled(false);
         tf.btnModTar.setEnabled(false);
         tf.btnElemTar.setEnabled(false);
-        
-        
 
     }
 
@@ -139,6 +133,9 @@ public class ControladorTarifas implements ActionListener {
 
         if (e.getSource() == tf.btnGuardarTar) {
 
+            if (tf.txtId.getText().length() == 0 || tf.txtNombreTar.getText().length() == 0 || tf.txtPrecio.getText().length() == 0) {
+                JOptionPane.showMessageDialog(null, "Error al guardar campos incompletos ");
+            }
             ta.setNombre(tf.txtNombreTar.getText());
             ta.setPrecio(Double.parseDouble(tf.txtPrecio.getText()));
             ta.setId(Integer.parseInt(tf.txtId.getText()));
@@ -148,16 +145,26 @@ public class ControladorTarifas implements ActionListener {
             if (band == 0) {
 
                 try {
+                    if (tf.txtNombreTar.getText().length() > 0) {
+                        if (et.registrar(ta)) {
 
-                    if (et.registrar(ta)) {
+                            JOptionPane.showMessageDialog(null, "Nueva tarifa creada");
+                            modelo.addRow(new Object[]{ta.getId(), ta.getNombre(), ta.getPrecio()});
 
-                        JOptionPane.showMessageDialog(null, "Nueva tarifa creada");
-                        modelo.addRow(new Object[]{ta.getId(), ta.getNombre(), ta.getPrecio()});
-
-                        band = -1;
-
+                            band = -1;
+                            tf.txtNombreTar.setText(null);
+                            tf.txtNombreTar.setEditable(false);
+                            tf.txtPrecio.setText(null);
+                            tf.txtPrecio.setEditable(false);
+                            tf.txtId.setText(null);
+                            tf.txtId.setEditable(false);
+                            tf.btnGuardarTar.setEnabled(false);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "ERROR: Verifique los datos ingresados");
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(null, "ERROR: Verifique los datos ingresados");
+
+                        JOptionPane.showMessageDialog(null, "ERROR: Campo 'nombre' vacio");
                     }
 
                 } catch (ClassNotFoundException ex) {
@@ -165,33 +172,38 @@ public class ControladorTarifas implements ActionListener {
                 }
             } else if (band == 1) {
                 try {
-                    if (et.modificar(ta)) {
-                        JOptionPane.showMessageDialog(null, "Cambios registrados exitosamente ");
+                    if (tf.txtNombreTar.getText().length() > 0) {
+                        if (et.modificar(ta)) {
+                            JOptionPane.showMessageDialog(null, "Cambios registrados exitosamente ");
 
-                        modelo.setValueAt(ta.getId(), filaEditar, 0);
-                        modelo.setValueAt(ta.getNombre(), filaEditar, 1);
-                        modelo.setValueAt(ta.getPrecio(), filaEditar, 2);  
-                        
-                        tf.btnModTar.setEnabled(false);
-                        tf.btnElemTar.setEnabled(false);
+                            modelo.setValueAt(ta.getId(), filaEditar, 0);
+                            modelo.setValueAt(ta.getNombre(), filaEditar, 1);
+                            modelo.setValueAt(ta.getPrecio(), filaEditar, 2);
 
-                        band = -1;
+                            tf.btnModTar.setEnabled(false);
+                            tf.btnElemTar.setEnabled(false);
+                            tf.txtNombreTar.setText(null);
+                            tf.txtNombreTar.setEditable(false);
+                            tf.txtPrecio.setText(null);
+                            tf.txtPrecio.setEditable(false);
+                            tf.txtId.setText(null);
+                            tf.txtId.setEditable(false);
+                            tf.btnGuardarTar.setEnabled(false);
 
+                            band = -1;
+
+                        } else {
+                            JOptionPane.showMessageDialog(null, "ERROR: Verifique los datos ingresados");
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(null, "ERROR: Verifique los datos ingresados");
+
+                        JOptionPane.showMessageDialog(null, "ERROR: Campo 'nombre' vacio");
                     }
+
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
-            tf.txtNombreTar.setText(null);
-            tf.txtNombreTar.setEditable(false);
-            tf.txtPrecio.setText(null);
-            tf.txtPrecio.setEditable(false);
-            tf.txtId.setText(null);
-            tf.txtId.setEditable(false);
-            tf.btnGuardarTar.setEnabled(false);
 
         }
 
@@ -201,6 +213,11 @@ public class ControladorTarifas implements ActionListener {
             tf.txtPrecio.setEditable(true);
             tf.txtId.setEditable(true);
             tf.btnGuardarTar.setEnabled(true);
+            tf.btnModTar.setEnabled(false);
+            tf.txtId.setText("");
+            tf.txtNombreTar.setText("");
+            tf.txtPrecio.setText("");
+
             band = 0;
         }
         if (e.getSource() == tf.btnElemTar) {
@@ -215,12 +232,11 @@ public class ControladorTarifas implements ActionListener {
                 if (JOptionPane.OK_OPTION == variable) {
 
                     et.eliminar(ta);
-                    modelo.removeRow(filaEditar); 
+                    modelo.removeRow(filaEditar);
                     JOptionPane.showMessageDialog(null, "Tarifa eliminada correctamente");
-                    
+
                     tf.btnElemTar.setEnabled(false);
                     tf.btnModTar.setEnabled(false);
-                    
 
                 }
 
@@ -236,19 +252,18 @@ public class ControladorTarifas implements ActionListener {
             tf.txtPrecio.setEditable(true);
             tf.btnGuardarTar.setEnabled(true);
             band = 1;
-            
+
             if (filaEditar >= 0 && numFila == 1) {
 
                 tf.txtId.setText(String.valueOf(tf.tablaTarifas.getValueAt(filaEditar, 0)));
                 tf.txtId.setEditable(false);
                 tf.txtNombreTar.setText((String) tf.tablaTarifas.getValueAt(filaEditar, 1));
                 tf.txtPrecio.setText(String.valueOf(tf.tablaTarifas.getValueAt(filaEditar, 2)));
-                
 
             }
 
         }
-      
+
     }
 
 }

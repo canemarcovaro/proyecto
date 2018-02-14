@@ -1,46 +1,231 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dc1eb104-e654-448a-a61c-b2e9f1b8f83a">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="700" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dc1eb104-e654-448a-a61c-b2e9f1b8f83a">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="537"/>
+	<property name="ireport.y" value="29"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
 	<parameter name="fecha1" class="java.lang.String"/>
 	<parameter name="fecha2" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT SUM(haber) FROM `cuentacorriente` WHERE fecha BETWEEN $P{fecha1} AND $P{fecha2}]]>
+		<![CDATA[SELECT
+     c.nombre AS nombre_Cliente,
+     cc.id AS id_Pago,
+     cc.dniCliente AS dni_Cliente,
+     cc.fecha AS fecha_Pago,
+     cc.detalle AS detalle_Pago,
+     cc.haber AS haber_Pago,
+     SUM(cc.haber) AS sum_hPago
+
+FROM
+clientes c INNER JOIN cuentacorriente cc
+
+ON
+c.dni = cc.dniCliente
+
+WHERE
+cc.fecha BETWEEN $P{fecha1} AND $P{fecha2}
+
+GROUP BY
+c.nombre,cc.id,cc.dniCliente,cc.fecha,cc.detalle,cc.haber]]>
 	</queryString>
-	<field name="SUM(haber)" class="java.lang.Double"/>
+	<field name="nombre_Cliente" class="java.lang.String"/>
+	<field name="id_Pago" class="java.lang.Integer"/>
+	<field name="dni_Cliente" class="java.lang.Integer"/>
+	<field name="fecha_Pago" class="java.sql.Date"/>
+	<field name="detalle_Pago" class="java.lang.String"/>
+	<field name="haber_Pago" class="java.lang.Double"/>
+	<field name="sum_hPago" class="java.lang.Double"/>
+	<variable name="sum_hPago_1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{sum_hPago}]]></variableExpression>
+	</variable>
+	<variable name="sum_hPago_2" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{sum_hPago}]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch"/>
+		<band height="59" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="-30" width="596" height="64" forecolor="#FFFFFF" backcolor="#330066" uuid="af46b1e6-2096-4192-946c-7feee3aa2350"/>
+				<staticText>
+					<reportElement x="185" y="20" width="213" height="44" forecolor="#FFFFFF" backcolor="#000066" uuid="a8653e66-23a9-464d-ac51-9bfc36a2fea4"/>
+					<textElement textAlignment="Center">
+						<font fontName="Berlin Sans FB Demi" size="24" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[HABER CLIENTES]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="519" y="20" width="77" height="20" forecolor="#FFFFFF" uuid="511c0e82-6ccb-4a14-b0e1-4ce0290ba2b9"/>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="34" width="596" height="25" forecolor="#3366FF" backcolor="#3333FF" uuid="1ebf3f1c-a2b3-42a5-b639-642ce2fedf67"/>
+			</frame>
+		</band>
 	</title>
 	<pageHeader>
-		<band height="35" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="61" splitType="Stretch">
+		<band height="37" splitType="Stretch">
 			<staticText>
-				<reportElement x="146" y="2" width="100" height="20" uuid="0cf863a5-5b82-4bd4-9cc5-aa3660974e3f"/>
-				<text><![CDATA[SUM(haber)]]></text>
+				<reportElement x="1" y="16" width="117" height="20" uuid="cf58892f-4437-4e4a-af73-a38c990c64ec"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Nombre:]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="181" y="16" width="36" height="20" uuid="f57f1523-5098-4485-8c39-6455846cf00c"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[ID:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="218" y="16" width="76" height="20" uuid="7389895e-49f2-4963-b739-7fb9c0f6bee0"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Haber:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="119" y="17" width="61" height="20" uuid="82ce4c3b-018a-4883-891d-417a60ca87f0"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[DNI:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="295" y="17" width="182" height="20" uuid="9891032e-b503-452d-8ed5-ec34b41f5884"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Detalle:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="478" y="17" width="76" height="20" uuid="0daf62ac-a2ba-4145-b12d-27178df608ab"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="15" width="555" height="1" uuid="efd4d322-deb0-4cf2-afed-320562cc2ccc"/>
+			</line>
+			<line>
+				<reportElement x="0" y="36" width="555" height="1" uuid="f37772ce-c7a1-4e69-80aa-06790bb826e3"/>
+			</line>
+			<line>
+				<reportElement x="118" y="16" width="1" height="21" uuid="e5bf4168-600d-46fb-b9dc-f3f1bf97f875"/>
+			</line>
+			<line>
+				<reportElement x="180" y="16" width="1" height="21" uuid="dbc2f509-d7bc-4578-9511-ca791794dc1a"/>
+			</line>
+			<line>
+				<reportElement x="294" y="16" width="1" height="20" uuid="ff364806-5042-41d3-abf4-666cf7c4ef7a"/>
+			</line>
+			<line>
+				<reportElement x="477" y="16" width="1" height="20" uuid="5eb5db63-223b-4e3c-8555-80fe26649226"/>
+			</line>
+			<line>
+				<reportElement x="554" y="16" width="1" height="20" uuid="c17d9546-1b2c-4f98-bf21-f81e191f2da5"/>
+			</line>
+			<line>
+				<reportElement x="0" y="15" width="1" height="21" uuid="1a80d2b4-3d9b-48f0-b90f-16c718669998"/>
+			</line>
+			<line>
+				<reportElement x="217" y="15" width="1" height="22" uuid="2ea2f4d8-c726-4865-a333-6b8134727711"/>
+			</line>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch">
+		<band height="21" splitType="Stretch">
 			<textField>
-				<reportElement x="146" y="24" width="100" height="20" uuid="23efb405-7e25-45e0-a474-031f464a73e5"/>
-				<textFieldExpression><![CDATA[$F{SUM(haber)}]]></textFieldExpression>
+				<reportElement x="181" y="0" width="36" height="20" uuid="9540eed7-591a-4c0a-a678-f652d2b3808f"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{id_Pago}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement x="118" y="0" width="62" height="20" uuid="118a9f23-509d-42fa-90dc-f92d462a09a6"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{dni_Cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="218" y="0" width="76" height="20" uuid="9e30abce-0fb4-4f3c-9d96-3416e6e40839"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{haber_Pago}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="295" y="0" width="182" height="20" uuid="45d80173-2532-4ebb-a060-9c00915a6419"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{detalle_Pago}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="0" width="117" height="20" uuid="cda2087f-88e7-4a19-bc43-f916b99a30b1"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nombre_Cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="492" y="1" width="51" height="20" uuid="71e7b519-1acd-4154-93e9-e57315114383"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{fecha_Pago}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="20" width="554" height="1" uuid="0a2844d4-e71b-470a-95d3-a0f9ee9b8256"/>
+			</line>
+			<line>
+				<reportElement x="118" y="-2" width="1" height="23" uuid="a29aad43-54aa-4776-b89a-693a422a7605"/>
+			</line>
+			<line>
+				<reportElement x="180" y="-1" width="1" height="22" uuid="5eea0066-d232-4a92-ba1f-80de126435f6"/>
+			</line>
+			<line>
+				<reportElement x="477" y="0" width="1" height="20" uuid="03f50cb7-e085-4bbb-8ff1-475d5176d0c6"/>
+			</line>
+			<line>
+				<reportElement x="294" y="0" width="1" height="21" uuid="596dd271-30bf-426c-a336-ac4d2bf69a91"/>
+			</line>
+			<line>
+				<reportElement x="554" y="-2" width="1" height="23" uuid="c27eb994-e1f2-4cf1-af57-f4411645428e"/>
+			</line>
+			<line>
+				<reportElement x="0" y="-1" width="1" height="21" uuid="434e5fd8-d19a-47f8-ae08-15820736c7e4"/>
+			</line>
+			<line>
+				<reportElement x="217" y="0" width="1" height="20" uuid="8e282b15-adf8-4845-8ea0-89e4d5832fcc"/>
+			</line>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="435" y="0" width="80" height="20" uuid="7d86a48c-de90-49bd-a049-e560c53cb561"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="0" width="40" height="20" uuid="fe368400-21ba-467b-8a26-0c566136fdd1"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch"/>
+		<band height="103" splitType="Stretch">
+			<staticText>
+				<reportElement x="408" y="17" width="143" height="30" uuid="08dcdb24-45bf-453b-a61d-3ffa5ad4e10a"/>
+				<textElement>
+					<font size="16" isBold="true" isItalic="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL HABERES:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="456" y="47" width="87" height="53" uuid="4fa996ab-f5b6-4e89-a0f4-4c75077088f7"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sum_hPago_2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="430" y="47" width="26" height="30" uuid="b10f9f6c-5c36-408b-96e7-c80aabbed281"/>
+				<textElement textAlignment="Right">
+					<font size="16" isBold="true" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[$]]></text>
+			</staticText>
+		</band>
 	</summary>
 </jasperReport>

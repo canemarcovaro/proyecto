@@ -11,6 +11,8 @@ import Vista.VistaPagos;
 import Modelo.Cuenta;
 import Modelo.EntidadCuentaCorriente;
 import Modelo.MiModelo;
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,7 +62,7 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
         this.pp.btnAceptar.addActionListener(this);
         this.pp.btnEliminar.addActionListener(this);
         this.pp.tablaPagos.addMouseListener(this);
-//        this.pp.tablaClientes.addMouseListener(this);
+        this.pp.tablaClientes.addMouseListener(this);
         
     }
     
@@ -87,22 +89,54 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
         pp.txtDetalle.setText("");
         
         
+        c = new MiModelo();
 
-        limpiarTabla();
+        limpiarTablaPagos();
         cargarTablaPagos(nuevo);
+        limpiarTablaClientes();
+        try {
+            cargarTablaClientes(c);
+        } catch (SQLException ex) {
+            Logger.getLogger(ControladorPago.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
 
         System.out.println(pp.txtDni2.getText());
 
         
     }
+    
+    public double filtrarTarifa() {
 
-    public void limpiarTabla() {
+        int i = 0;
+        String str = pp.comboTar.getSelectedItem().toString();
+        String[] str1 = str.split("\\$");
+        String str2 = str1[1];
+        double num = 0.00;
+        num = Double.parseDouble(str2);
+
+        System.out.println(num);
+
+        return num;
+    }
+
+    public void limpiarTablaPagos() {
 
         int sizeModel = pp.tablaPagos.getRowCount();
-        int sizeModel2 = pp.tablaClientes.getRowCount();
 
         for (int i = 0; i < sizeModel; i++) {
             pp.tablaPagos.removeRowSelectionInterval(0, sizeModel - 1);
+        }
+
+    }
+    
+      public void limpiarTablaClientes() {
+
+        int sizeModel2 = pp.tablaClientes.getRowCount();
+
+        for (int i = 0; i < sizeModel2; i++) {
+
             pp.tablaClientes.removeRowSelectionInterval(0, sizeModel2 - 1);
         }
 
@@ -154,14 +188,14 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
             table.addColumn("DEBE");
             table.addColumn("HABER");
 
-            int debe = 0;
-            int haber = 0;
+            double debe = 0.00;
+            double haber = 0.00;
 
             try {
                 while (rs.next()) {
 
-                    debe = debe + rs.getInt(3);
-                    haber = haber + rs.getInt(4);
+                    debe = debe + rs.getDouble(3);
+                    haber = haber + rs.getDouble(4);
 
                     Object[] filas = new Object[cantCol];
                     for (int i = 0; i < cantCol; i++) {
@@ -172,8 +206,10 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
                     table.addRow(filas);
 
                 }
-
-                pp.txtSaldo.setText(String.valueOf(haber - debe));
+               
+                pp.txtSaldo.setText(String.format("%.2f",(haber - debe)));
+               
+                
 
             } catch (SQLException ex) {
                 Logger.getLogger(ControladorMenu.class.getName()).log(Level.SEVERE, null, ex);
@@ -255,14 +291,14 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
             table.addColumn("DEBE");
             table.addColumn("HABER");
 
-            int debe = 0;
-            int haber = 0;
+            double debe = 0.00;
+            double haber = 0.00;
 
             try {
                 while (rs.next()) {
 
-                    debe = debe + rs.getInt(3);
-                    haber = haber + rs.getInt(4);
+                    debe = debe + rs.getDouble(3);
+                    haber = haber + rs.getDouble(4);
 
                     Object[] filas = new Object[cantCol];
                     for (int i = 0; i < cantCol; i++) {
@@ -273,8 +309,8 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
                     table.addRow(filas);
 
                 }
-
-                pp.txtSaldo.setText(String.valueOf(haber - debe));
+                
+                pp.txtSaldo.setText(String.format("%.2f",(haber - debe)));
 
             } catch (SQLException ex) {
                 Logger.getLogger(ControladorMenu.class.getName()).log(Level.SEVERE, null, ex);
@@ -323,7 +359,7 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
             Connection con = conn.getConect();
 
             String sql = "SELECT dni, nombre FROM clientes WHERE dni = '" + dni + "'";
-            String sql2 = "SELECT id, precio FROM tarifas";
+            String sql2 = "SELECT id, precio, nombre FROM tarifas";
 
             try {
                 ps = con.prepareStatement(sql);
@@ -359,7 +395,7 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
 
                 while (rs.next()) {
 
-                    pp.comboTar.addItem(rs.getString(2));
+                    pp.comboTar.addItem(rs.getString(1) + " - " +rs.getString(3) + " :$"+rs.getString(2));
 
                 }
 
@@ -398,8 +434,8 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
             
             ps.setInt(1, Integer.parseInt(pp.txtDni.getText()));
             ps.setString(2, String.valueOf(pp.txtFecha.getText()));
-            ps.setDouble(3, (double) Integer.parseInt(pp.txtImporte.getText()) * (double) Integer.parseInt(String.valueOf(pp.comboMeses.getSelectedItem())));
-            ps.setDouble(4, (double) Integer.parseInt(pp.txtMonto.getText()));
+            ps.setDouble(3, Double.parseDouble(pp.txtImporte.getText()) * Double.parseDouble(String.valueOf(pp.comboMeses.getSelectedItem())));
+            ps.setDouble(4, Double.parseDouble(pp.txtMonto.getText()) * Double.parseDouble(String.valueOf(pp.comboMeses.getSelectedItem())));
             ps.setString(5, detalle);
 
             ps.execute();
@@ -454,7 +490,9 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
     public void cargarTablaClientes(MiModelo table) throws SQLException {
 
         try {
-
+            
+            trs = new TableRowSorter(c);
+            pp.tablaClientes.setRowSorter(trs);
             PreparedStatement ps = null;
 
             pp.tablaClientes.setModel(table);
@@ -566,22 +604,22 @@ public void llenarDetalle() throws SQLException {
 
        
         if (e.getSource() == pp.btnBuscar) {
-
-            try {
-               
-                c = new MiModelo();
-                limpiarTabla();
-                cargarTablaClientes(c);
-                
             
-            } catch (SQLException ex) {
+            pp.venInterna.setVisible(true);
+            
+            pp.txtCuenta.setText("");
+            pp.txtCuenta.requestFocus();
+            
+            Robot robot = null;
+            try {
+                robot = new Robot();
+            } catch (AWTException ex) {
                 Logger.getLogger(ControladorPago.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            pp.venInterna.setVisible(true);
+            robot.keyRelease(KeyEvent.VK_BACK_SPACE);
 
         }
-
+       
         if (e.getSource() == pp.btnPago) {
 
             pp.panelPago.setVisible(true);
@@ -629,7 +667,7 @@ public void llenarDetalle() throws SQLException {
         }
         if (e.getSource() == pp.btnCancelar2){
             
-            Window w = SwingUtilities.getWindowAncestor(pp.venInterna);
+            
             pp.venInterna.setVisible(false);
             
             
@@ -642,7 +680,7 @@ public void llenarDetalle() throws SQLException {
                 pp.txtImporte.setText("0");
             } else {
                 pp.txtImporte.setEditable(false);
-                pp.txtImporte.setText(pp.comboTar.getSelectedItem().toString());
+                pp.txtImporte.setText(String.valueOf(filtrarTarifa()));
 
             }
 
@@ -656,7 +694,7 @@ public void llenarDetalle() throws SQLException {
             if (eleccion == JOptionPane.YES_OPTION) {
 
                 activarCuenta();
-                limpiarTabla();
+                limpiarTablaPagos();
                 pp.btnACuenta.setEnabled(false);
                 cargarTablaPagos(a);
 
@@ -671,7 +709,7 @@ public void llenarDetalle() throws SQLException {
             String dni = String.valueOf(pp.tablaClientes.getValueAt(filaEditar, 0));
 
             MiModelo a = new MiModelo();
-            limpiarTabla();
+            limpiarTablaPagos();
             cargarTablaPagos2(a, dni);
             pp.btnPago.setEnabled(true);
             pp.panelInfo.setVisible(true);
@@ -703,7 +741,7 @@ public void llenarDetalle() throws SQLException {
             try {
                 
               eliminar(z);
-              limpiarTabla();
+              limpiarTablaPagos();
               cargarTablaPagos(y);
               pp.btnEliminar.setEnabled(false);
               
@@ -731,11 +769,43 @@ public void llenarDetalle() throws SQLException {
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getSource() == pp.txtCuenta) {
-
-            trs.setRowFilter(RowFilter.regexFilter(pp.txtCuenta.getText(), 0));
-
+            
+            if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE){
+           
+               pp.txtCuenta.setText("");
+           }
+            
+           if(e.getKeyChar() == KeyEvent.VK_0 || 
+              e.getKeyChar() == KeyEvent.VK_1 ||
+              e.getKeyChar() == KeyEvent.VK_2 ||
+              e.getKeyChar() == KeyEvent.VK_3 ||
+              e.getKeyChar() == KeyEvent.VK_4 || 
+              e.getKeyChar() == KeyEvent.VK_5 ||
+              e.getKeyChar() == KeyEvent.VK_6 ||
+              e.getKeyChar() == KeyEvent.VK_7 ||
+              e.getKeyChar() == KeyEvent.VK_8 || 
+              e.getKeyChar() == KeyEvent.VK_9){
+               
+           trs.setRowFilter(RowFilter.regexFilter(pp.txtCuenta.getText(), 0));
+           
+           }
+             if(!(e.getKeyChar() == KeyEvent.VK_0 || 
+              e.getKeyChar() == KeyEvent.VK_1 ||
+              e.getKeyChar() == KeyEvent.VK_2 ||
+              e.getKeyChar() == KeyEvent.VK_3 ||
+              e.getKeyChar() == KeyEvent.VK_4 || 
+              e.getKeyChar() == KeyEvent.VK_5 ||
+              e.getKeyChar() == KeyEvent.VK_6 ||
+              e.getKeyChar() == KeyEvent.VK_7 ||
+              e.getKeyChar() == KeyEvent.VK_8 || 
+              e.getKeyChar() == KeyEvent.VK_9)){
+               
+           trs.setRowFilter(RowFilter.regexFilter("(?iu)"+pp.txtCuenta.getText(), 1));
+          
+           }
+      
         }
-
+           
     }
 
     
@@ -758,7 +828,7 @@ public void llenarDetalle() throws SQLException {
             String dni = String.valueOf(pp.tablaClientes.getValueAt(filaEditar, 0));
 
             MiModelo a = new MiModelo();
-            limpiarTabla();
+            limpiarTablaPagos();
             cargarTablaPagos2(a, dni);
             pp.btnPago.setEnabled(true);
             pp.panelInfo.setVisible(true);

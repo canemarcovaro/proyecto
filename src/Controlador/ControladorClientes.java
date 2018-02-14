@@ -76,14 +76,10 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
         this.mc.btnNuevo.addActionListener(this);
         this.c.btnEdit.addActionListener(this);
         this.mc.txtBuscar.addKeyListener(this);
-        //this.mc.jcomboBuscar.addKeyListener(this);
         this.mc.btnMod.addActionListener(this);
         this.mc.tabla1.addMouseListener(this);
-        //this.mc.btnElim.addActionListener(this);
         this.c.btnCancel.addActionListener(this);
         this.c.btnSubir.addActionListener(this);
-        
-
 
     }
 
@@ -92,7 +88,7 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
         c.setTitle("Clientes");
         c.setLocationRelativeTo(null);
         c.setVisible(true);
-        
+
     }
 
     public void iniciarMenuCliente() throws SQLException {
@@ -100,10 +96,8 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
         mc.setTitle("Menu Clientes");
         mc.setLocationRelativeTo(null);
         mc.setVisible(true);
-        
 
         //Fixed, se incorporó bandera para solucionar problema de Dispose con la Vista MenuClientes...
-        
         if (band == false) {
             cargarTabla();
             band = true;
@@ -114,16 +108,16 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
     public void calcularFecha() {
 
         Date fechaVal = c.fechaIngreso.getDate();
-        
+
         cl.setFechaVal(new java.sql.Date(fechaVal.getTime()));
         cl.setFechaVto(new java.sql.Date(fechaVal.getTime()));
 
     }
 
     public void cargarTabla() throws SQLException {
-        
+
         try {
-            
+
             PreparedStatement ps = null;
 
             mc.tabla1.setModel(modelo);
@@ -142,6 +136,7 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
             modelo.addColumn("TELEFONO");
             modelo.addColumn("DOMICILIO");
             modelo.addColumn("MAIL");
+
             while (rs.next()) {
                 Object[] filas = new Object[cantCol];
                 for (int i = 0; i < cantCol; i++) {
@@ -162,13 +157,12 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == mc.btnNuevo) {
-            
+
             c.txtDni.setEditable(true);
             c.btnGuardar.setVisible(true);
-            
 
             iniciarClientes();
-            
+
             Date fechaVal = Calendar.getInstance().getTime();
             c.fechaIngreso.setDate(fechaVal);
             c.fechaIngreso2.setVisible(true);
@@ -178,7 +172,7 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
             c.txtEmail.setText(null);
             c.txtNombre.setText(null);
             c.txtNum.setText(null);
-           
+
             c.fecha.setDate(Calendar.getInstance().getTime());
             c.fechaIngreso.setDate(Calendar.getInstance().getTime());
             Image image1 = new ImageIcon(getClass().getResource("/Imagenes/perfil2.png")).getImage();
@@ -187,11 +181,16 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
 
         }
         if (e.getSource() == c.btnGuardar) {
-            
+
             c.txtDni.setEditable(true);
-            
+
+            if (c.txtDni.getText().length() == 0 || c.txtDirec.getText().length() == 0 || c.txtNombre.getText().length() == 0 || c.txtEmail.getText().length() == 0 || c.txtNum.getText().length() == 0) {
+                JOptionPane.showMessageDialog(null, "Error campos incompletos");
+
+            }
+
             SimpleDateFormat formatter = new SimpleDateFormat("aa/MM/dddd");
-            
+
             cl.setDni(Integer.parseInt(c.txtDni.getText()));
             cl.setNombre(c.txtNombre.getText());
             cl.setFechaNac(new java.sql.Date(c.fecha.getDate().getTime()));
@@ -200,40 +199,45 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
             cl.setMail(c.txtEmail.getText());
             cl.setRuta(foto);
             calcularFecha();
-            boolean b=false;
+            boolean b = false;
 
             try {
-            String botones[] = {"Si", "No"};
-            int eleccion = JOptionPane.showOptionDialog(c, "¿Desea crear el cliente"+ c.txtDni.getText()+"? Una vez creado no podrá modificar el DNI", "Creando Cliente", 0, 2, null, botones, this);
-            if (eleccion == JOptionPane.YES_OPTION) {
+                String botones[] = {"Si", "No"};
+                int eleccion = JOptionPane.showOptionDialog(c, "¿Desea crear el cliente" + c.txtDni.getText() + "? Una vez creado no podrá modificar el DNI", "Creando Cliente", 0, 2, null, botones, this);
+                if (eleccion == JOptionPane.YES_OPTION) {
 
-                 if (en.registrar(cl)) {
-                    JOptionPane.showMessageDialog(null, "registro guardado");
-                    modelo.addRow(new Object[]{cl.getDni(), cl.getNombre(), cl.getFechaNac(), cl.getNroTel(), cl.getDirec(), cl.getMail()});
-                    b=true;
-                } else {
-                    JOptionPane.showMessageDialog(null, "error al guardar");
-                    //en.eliminar(cl);
-                }   
+                    if (c.txtNombre.getText().length() > 0) {
+                        if (en.registrar(cl)) {
 
-            } else if (eleccion == JOptionPane.NO_OPTION) {
+                            JOptionPane.showMessageDialog(null, "registro guardado");
+                            modelo.addRow(new Object[]{cl.getDni(), cl.getNombre(), cl.getFechaNac(), cl.getNroTel(), cl.getDirec(), cl.getMail()});
+                            b = true;
+                        } else {
+                            JOptionPane.showMessageDialog(null, "ERROR: DNI existente ");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "ERROR: Campo 'nombre' incompleto ");
 
-            }
-           
+                    }
+
+                } else if (eleccion == JOptionPane.NO_OPTION) {
+
+                }
+
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            if(b==true){
-            c.dispose();
-            b=false;
+
+            if (b == true) {
+                c.dispose();
+                b = false;
             }
 
         }
         if (e.getSource() == c.btnSubir) {
-            FileNameExtensionFilter filtro = new FileNameExtensionFilter("Formato de Archivos: JPEG(*.JPG;*.JPEG)", "jpg", "jpeg");
+            FileNameExtensionFilter filtro = new FileNameExtensionFilter("Formato de Archivos: JPEG(.JPG;.JPEG)", "jpg", "jpeg");
             JFileChooser archivo = new JFileChooser();
             archivo.addChoosableFileFilter(filtro);
             archivo.setDialogTitle("Abrir imagen");
@@ -288,10 +292,12 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
 
         }
         if (e.getSource() == c.btnEdit) {
+            if (c.txtDni.getText().length() == 0 || c.txtDirec.getText().length() == 0 || c.txtNombre.getText().length() == 0 || c.txtEmail.getText().length() == 0 || c.txtNum.getText().length() == 0) {
+                JOptionPane.showMessageDialog(null, "Error campos incompletos");
 
-            c.txtDni.setEditable(true);
-            
+            }
 
+            c.txtDni.setEditable(false);
             cl.setDni(Integer.parseInt(c.txtDni.getText()));
             cl.setNombre(c.txtNombre.getText());
             cl.setFechaNac(new java.sql.Date(c.fecha.getDate().getTime()));
@@ -299,29 +305,33 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
             cl.setDirec(c.txtDirec.getText());
             cl.setMail(c.txtEmail.getText());
             cl.setRuta(foto);
-            
-            
+
             try {
-                if (en.modificar(cl)) {
-                    JOptionPane.showMessageDialog(null, "registro modificado");
+                if (c.txtNombre.getText().length() > 0) {
+                    if (en.modificar(cl)) {
 
-                    modelo.setValueAt(cl.getDni(), filaEditar, 0);
-                    modelo.setValueAt(cl.getNombre(), filaEditar, 1);
-                    modelo.setValueAt(cl.getFechaNac(), filaEditar, 2);
+                        JOptionPane.showMessageDialog(null, "registro modificado");
 
-                    modelo.setValueAt(cl.getNroTel(), filaEditar, 3);
-                    modelo.setValueAt(cl.getDirec(), filaEditar, 4);
-                    modelo.setValueAt(cl.getMail(), filaEditar, 5);
+                        modelo.setValueAt(cl.getDni(), filaEditar, 0);
+                        modelo.setValueAt(cl.getNombre(), filaEditar, 1);
+                        modelo.setValueAt(cl.getFechaNac(), filaEditar, 2);
 
+                        modelo.setValueAt(cl.getNroTel(), filaEditar, 3);
+                        modelo.setValueAt(cl.getDirec(), filaEditar, 4);
+                        modelo.setValueAt(cl.getMail(), filaEditar, 5);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error al modificar");
+
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "error al modificar");
+                    JOptionPane.showMessageDialog(null, "Error al modificar: Campo nombre incompleto");
                 }
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             c.txtDni.setEnabled(true);
             Image image1 = new ImageIcon(getClass().getResource("/Imagenes/perfil2.png")).getImage();
             image1.getScaledInstance(250, 300, Image.SCALE_DEFAULT);
@@ -329,37 +339,14 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
             c.dispose();
 
         }
-        //if (e.getSource() == mc.btnElim) {
-          //  Object[] botones = {" Confirmar", " Cancelar"};
-            // int variable = JOptionPane.showOptionDialog(null, " Estas seguro que quieres eliminar este registro?", "Eliminar Registro", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null/*icono*/, botones, botones[0]);
 
-            /*int filaEditar = mc.tabla1.getSelectedRow();
-            int id = (int) mc.tabla1.getValueAt(filaEditar, 0);
-
-            cl.setDni(id);
-            try {
-                if (JOptionPane.OK_OPTION == variable) {
-
-                    en.eliminar(cl);
-
-                    modelo.removeRow(filaEditar);
-
-                }
-
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ControladorClientes.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }*/
-            
         if (e.getSource() == c.btnCancel) {
             c.txtDni.setEnabled(true);
             Image image1 = new ImageIcon(getClass().getResource("/Imagenes/perfil2.png")).getImage();
             image1.getScaledInstance(250, 300, Image.SCALE_DEFAULT);
             c.labFoto.setIcon(new ImageIcon(image1));
             c.dispose();
-            
+
         }
     }
 
@@ -374,8 +361,39 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getSource() == mc.txtBuscar) {
+            if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
 
-            trs.setRowFilter(RowFilter.regexFilter(mc.txtBuscar.getText(), 0));
+                mc.txtBuscar.setText("");
+            }
+
+            if (e.getKeyChar() == KeyEvent.VK_0
+                    || e.getKeyChar() == KeyEvent.VK_1
+                    || e.getKeyChar() == KeyEvent.VK_2
+                    || e.getKeyChar() == KeyEvent.VK_3
+                    || e.getKeyChar() == KeyEvent.VK_4
+                    || e.getKeyChar() == KeyEvent.VK_5
+                    || e.getKeyChar() == KeyEvent.VK_6
+                    || e.getKeyChar() == KeyEvent.VK_7
+                    || e.getKeyChar() == KeyEvent.VK_8
+                    || e.getKeyChar() == KeyEvent.VK_9) {
+
+                trs.setRowFilter(RowFilter.regexFilter(mc.txtBuscar.getText(), 0));
+
+            }
+            if (!(e.getKeyChar() == KeyEvent.VK_0
+                    || e.getKeyChar() == KeyEvent.VK_1
+                    || e.getKeyChar() == KeyEvent.VK_2
+                    || e.getKeyChar() == KeyEvent.VK_3
+                    || e.getKeyChar() == KeyEvent.VK_4
+                    || e.getKeyChar() == KeyEvent.VK_5
+                    || e.getKeyChar() == KeyEvent.VK_6
+                    || e.getKeyChar() == KeyEvent.VK_7
+                    || e.getKeyChar() == KeyEvent.VK_8
+                    || e.getKeyChar() == KeyEvent.VK_9)) {
+
+                trs.setRowFilter(RowFilter.regexFilter("(?iu)" + mc.txtBuscar.getText(), 1));
+
+            }
 
         }
 
@@ -409,9 +427,9 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
 
             }
         }
-        if(e.getClickCount() == 2) {
-        
-        c.btnGuardar.setVisible(false);
+        if (e.getClickCount() == 2) {
+
+            c.btnGuardar.setVisible(false);
             c.btnEdit.setVisible(true);
             c.fechaIngreso2.setVisible(false);
 
@@ -444,7 +462,7 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
                 }
 
             }
-            
+
         }
     }
 

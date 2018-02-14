@@ -39,6 +39,7 @@ public class ControladorReportes implements ActionListener {
     public ControladorReportes(VistaReportes vr) {
         this.vr = vr;
         this.vr.reporte1.addActionListener(this);
+        this.vr.reporte2.addActionListener(this); 
     }
 
     public void iniciar() {
@@ -51,6 +52,7 @@ public class ControladorReportes implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == vr.reporte1) {
             try {
+                
                 Conexion con = new Conexion();
 
                 Connection conn = null;
@@ -59,10 +61,10 @@ public class ControladorReportes implements ActionListener {
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ControladorReportes.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
+                
                 JasperReport reporte = null;
-                String path = System.getProperty("user.dir") + "\\src\\Reportes\\report1.jasper";
-
+                //String path = "C:\\Reportes\\report1.jasper";
+                
                 Date fecha1 = new java.sql.Date(vr.fecha1.getDate().getTime());
 
                 Date fecha2 = new java.sql.Date(vr.fecha2.getDate().getTime());
@@ -77,9 +79,37 @@ public class ControladorReportes implements ActionListener {
                 parametro.put("fecha1", fecha11);
                 parametro.put("fecha2", fecha12);
                 
-                reporte = (JasperReport) JRLoader.loadObjectFromFile(path);
-
+                reporte = (JasperReport) JRLoader.loadObject(getClass().getResource("/Reportes/report1.jasper"));
+                
                 JasperPrint jprint = JasperFillManager.fillReport(reporte, parametro, conn);
+                JasperViewer view = new JasperViewer(jprint, false);
+                view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                
+                view.setVisible(true);
+
+            } catch (JRException ex) {
+                Logger.getLogger(ControladorReportes.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        if(e.getSource() == vr.reporte2){
+              try {
+                Conexion con = new Conexion();
+
+                Connection conn = null;
+                try {
+                    conn = con.getConect();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ControladorReportes.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                JasperReport reporte = null;
+                //String path = System.getProperty("user.dir") + "\\src\\Reportes\\report2.jasper";
+
+                
+                reporte = (JasperReport) JRLoader.loadObject(getClass().getResource("/Reportes/report2.jasper"));
+
+                JasperPrint jprint = JasperFillManager.fillReport(reporte, null, conn);
                 JasperViewer view = new JasperViewer(jprint, false);
                 view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -88,8 +118,8 @@ public class ControladorReportes implements ActionListener {
             } catch (JRException ex) {
                 Logger.getLogger(ControladorReportes.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
+            
     }
 
 }

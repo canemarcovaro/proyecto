@@ -25,11 +25,7 @@ public class Tarifas extends javax.swing.JFrame {
     public Tarifas() {
         
         initComponents();
-        
-        //Cambiar icono ventana
-        
-        setIconImage(new ImageIcon(getClass().getResource("/Imagenes/logo.png")).getImage());
-        
+       
         
         //Agregar Imagen al frame
         
@@ -63,7 +59,6 @@ public class Tarifas extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(840, 617));
         setResizable(false);
 
         tablaTarifas.setModel(new javax.swing.table.DefaultTableModel(
@@ -99,14 +94,17 @@ public class Tarifas extends javax.swing.JFrame {
 
         btnGuardarTar.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnGuardarTar.setText("OK");
+        btnGuardarTar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnGuardarTar.setFocusPainted(false);
 
         btnModTar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnModTar.setText("MODIFICAR");
+        btnModTar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnModTar.setFocusPainted(false);
 
         btnElemTar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnElemTar.setText("ELIMINAR");
+        btnElemTar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnElemTar.setFocusPainted(false);
 
         btnNuevoTar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -217,7 +215,7 @@ public class Tarifas extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnModTar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnElemTar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         pack();

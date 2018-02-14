@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -121,7 +122,7 @@ public void verificarVto() {
                     ps = con.prepareStatement(sql2);
                     ps.execute();
                     
-                  
+                     
                     
                 }
                 
@@ -227,6 +228,7 @@ public void verificarVto() {
         }
         if(e.getSource() == m.btnRepo){
             cr.iniciar();
+            
         }
     }
 

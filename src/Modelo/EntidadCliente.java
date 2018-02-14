@@ -33,7 +33,7 @@ public class EntidadCliente extends Conexion {
         String sql2 = "INSERT INTO clientes (dni,nombre,fechaNac,nroTel,direccion,mail,fechaVal,fechaVto,baja) VALUES (?,?,?,?,?,?,?,?,true)";
         
         try {
-            int i=0;
+            
             if (c.getRuta() == null) {
                 
                 ps = con.prepareStatement(sql2);
@@ -46,8 +46,8 @@ public class EntidadCliente extends Conexion {
                 ps.setDate(7, c.getFechaVal());
                 ps.setDate(8, c.getFechaVto());
                 
-                System.out.println(i);
-                
+                System.out.println(c.getNombre()+ "prueba");
+               
                 ps.execute();
                 
             } else {

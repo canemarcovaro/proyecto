@@ -23,12 +23,7 @@ public class MenuClientes extends javax.swing.JFrame {
     int x,y;
     public MenuClientes() {
         initComponents();
-        
-         //Cambiar icono ventana
-        
-        setIconImage(new ImageIcon(getClass().getResource("/Imagenes/logo.png")).getImage());
-        
-        
+
         //Agregar Imagen al frame
         
         ((JPanel)getContentPane()).setOpaque(false);

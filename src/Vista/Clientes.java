@@ -25,11 +25,6 @@ public class Clientes extends javax.swing.JFrame {
         
         initComponents();
         
-        //Cambiar icono ventana
-        
-        setIconImage(new ImageIcon(getClass().getResource("/Imagenes/logo.png")).getImage());
-        
-        
         //Agregar Imagen al frame
         
         ((JPanel)getContentPane()).setOpaque(false);
