@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="1000" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0a9192d7-41f6-4a8e-8b35-2d6568e0b0ae">
-	<property name="ireport.zoom" value="7.0"/>
-	<property name="ireport.x" value="3302"/>
-	<property name="ireport.y" value="769"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<queryString>
 		<![CDATA[SELECT
      c.nombre AS nombre_Cliente,
@@ -12,7 +12,7 @@
      cc.detalle AS detalle_Pago,
      cc.haber AS haber_Pago,
      cc.debe AS debe_Pago,
-     SUM(cc.haber+cc.debe) AS saldo_Cuenta
+     SUM(cc.haber-cc.debe) AS saldo_Cuenta
 
 FROM
 clientes c INNER JOIN cuentacorriente cc
@@ -24,7 +24,7 @@ GROUP BY
 cc.id,c.dni
 
 ORDER BY
-c.dni]]>
+c.dni,cc.id]]>
 	</queryString>
 	<field name="nombre_Cliente" class="java.lang.String"/>
 	<field name="id_Pago" class="java.lang.Integer"/>
@@ -35,6 +35,9 @@ c.dni]]>
 	<field name="debe_Pago" class="java.lang.Double"/>
 	<field name="saldo_Cuenta" class="java.lang.Double"/>
 	<variable name="saldo_Cuenta_1" class="java.lang.Double" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
+	</variable>
+	<variable name="saldo_Cuenta_2" class="java.lang.Double" resetType="Page" calculation="Sum">
 		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
 	</variable>
 	<group name="Cliente">
@@ -120,16 +123,16 @@ c.dni]]>
 					</textElement>
 					<text><![CDATA[SALDO CUENTA:]]></text>
 				</staticText>
-				<textField>
-					<reportElement x="397" y="49" width="157" height="39" uuid="de0c5649-bfd6-4570-8074-fe4c1f7012e1"/>
-					<textElement textAlignment="Justified">
-						<font size="16"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{saldo_Cuenta_1}]]></textFieldExpression>
-				</textField>
 				<line>
 					<reportElement x="0" y="9" width="555" height="1" uuid="48ad22af-5893-40c9-b30c-25d1e5943baf"/>
 				</line>
+				<textField>
+					<reportElement x="397" y="49" width="159" height="33" uuid="d9dc2ff9-fc5e-41a7-bd1b-88194426c631"/>
+					<textElement textAlignment="Justified">
+						<font size="18"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{saldo_Cuenta_2}]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupFooter>
 	</group>

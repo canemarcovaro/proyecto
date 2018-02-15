@@ -87,6 +87,7 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
         pp.btnEliminar.setEnabled(false);
         pp.txtDetalle.setEditable(false);
         pp.txtDetalle.setText("");
+        pp.comboMeses.setSelectedIndex(0);
         
         
         c = new MiModelo();
@@ -298,7 +299,9 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
                 while (rs.next()) {
 
                     debe = debe + rs.getDouble(3);
+                    System.out.println(debe+"d");
                     haber = haber + rs.getDouble(4);
+                    System.out.println(haber+"h");
 
                     Object[] filas = new Object[cantCol];
                     for (int i = 0; i < cantCol; i++) {
@@ -435,7 +438,7 @@ public class ControladorPago implements ActionListener, KeyListener, MouseListen
             ps.setInt(1, Integer.parseInt(pp.txtDni.getText()));
             ps.setString(2, String.valueOf(pp.txtFecha.getText()));
             ps.setDouble(3, Double.parseDouble(pp.txtImporte.getText()) * Double.parseDouble(String.valueOf(pp.comboMeses.getSelectedItem())));
-            ps.setDouble(4, Double.parseDouble(pp.txtMonto.getText()) * Double.parseDouble(String.valueOf(pp.comboMeses.getSelectedItem())));
+            ps.setDouble(4, Double.parseDouble(pp.txtMonto.getText()));
             ps.setString(5, detalle);
 
             ps.execute();
@@ -626,6 +629,7 @@ public void llenarDetalle() throws SQLException {
             pp.txtImporte.setText("0");
             pp.txtMonto.setText("0");
             pp.btnPago.setEnabled(false);
+            pp.comboMeses.setSelectedIndex(0);
             nuevoPago();
 
         }
@@ -645,6 +649,7 @@ public void llenarDetalle() throws SQLException {
                 pp.txtFecha.setText(null);
                 pp.txtImporte.setText(null);
                 pp.txtMonto.setText(null);
+                pp.comboMeses.setSelectedIndex(0);
 
                 cargarTablaPagos(b);
 
@@ -715,6 +720,7 @@ public void llenarDetalle() throws SQLException {
             pp.panelInfo.setVisible(true);
             pp.txtCC.setVisible(true);
             pp.txtDni2.setVisible(true);
+            pp.comboMeses.setSelectedIndex(0);
 
             if (pp.txtECuenta.getText().equals("VENCIDA")) {
 

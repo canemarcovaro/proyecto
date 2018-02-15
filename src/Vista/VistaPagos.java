@@ -368,7 +368,7 @@ public class VistaPagos extends javax.swing.JFrame {
 
         jLabel1.setText("Saldo Cuenta: ");
 
-        txtSaldo.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        txtSaldo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtSaldo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         javax.swing.GroupLayout panelInfoLayout = new javax.swing.GroupLayout(panelInfo);
