@@ -190,11 +190,17 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
             }
 
             SimpleDateFormat formatter = new SimpleDateFormat("aa/MM/dddd");
-
-            cl.setDni(Integer.parseInt(c.txtDni.getText()));
+            
+            
+            String dni = c.txtDni.getText().replaceAll(" ", "");
+            String nroTel = c.txtNum.getText().replaceAll(" ","");
+            
+            System.out.println(dni);
+            
+            cl.setDni(Integer.parseInt(dni));
             cl.setNombre(c.txtNombre.getText());
             cl.setFechaNac(new java.sql.Date(c.fecha.getDate().getTime()));
-            cl.setNroTel(Integer.parseInt(c.txtNum.getText()));
+            cl.setNroTel(Integer.parseInt(nroTel));
             cl.setDirec(c.txtDirec.getText());
             cl.setMail(c.txtEmail.getText());
             cl.setRuta(foto);
@@ -203,7 +209,7 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
 
             try {
                 String botones[] = {"Si", "No"};
-                int eleccion = JOptionPane.showOptionDialog(c, "¿Desea crear el cliente" + c.txtDni.getText() + "? Una vez creado no podrá modificar el DNI", "Creando Cliente", 0, 2, null, botones, this);
+                int eleccion = JOptionPane.showOptionDialog(c, "¿Desea crear el cliente: " + dni + "? Una vez creado no podrá modificar el DNI", "Creando Cliente", 0, 2, null, botones, this);
                 if (eleccion == JOptionPane.YES_OPTION) {
 
                     if (c.txtNombre.getText().length() > 0) {
@@ -296,12 +302,12 @@ public class ControladorClientes implements ActionListener, KeyListener, MouseLi
                 JOptionPane.showMessageDialog(null, "Error campos incompletos");
 
             }
-
+            String nroTel = c.txtNum.getText().replaceAll(" ","");
             c.txtDni.setEditable(false);
             cl.setDni(Integer.parseInt(c.txtDni.getText()));
             cl.setNombre(c.txtNombre.getText());
             cl.setFechaNac(new java.sql.Date(c.fecha.getDate().getTime()));
-            cl.setNroTel(Integer.parseInt(c.txtNum.getText()));
+            cl.setNroTel(Integer.parseInt(nroTel));
             cl.setDirec(c.txtDirec.getText());
             cl.setMail(c.txtEmail.getText());
             cl.setRuta(foto);

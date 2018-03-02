@@ -21,7 +21,7 @@ ON
 c.dni = cc.dniCliente
 
 GROUP BY
-cc.id,c.dni
+c.dni,cc.id
 
 ORDER BY
 c.dni,cc.id]]>
@@ -38,6 +38,18 @@ c.dni,cc.id]]>
 		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
 	</variable>
 	<variable name="saldo_Cuenta_2" class="java.lang.Double" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
+	</variable>
+	<variable name="saldo_Cuenta_3" class="java.lang.Integer" resetType="Group" resetGroup="Cliente" calculation="Count">
+		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
+	</variable>
+	<variable name="saldo_Cuenta_4" class="java.lang.Double" resetType="Group" resetGroup="Cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
+	</variable>
+	<variable name="saldo_Cuenta_5" class="java.lang.Double" resetType="Group" resetGroup="Cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
+	</variable>
+	<variable name="saldo_Cuenta_6" class="java.lang.Double" resetType="Group" resetGroup="Cliente" calculation="Sum">
 		<variableExpression><![CDATA[$F{saldo_Cuenta}]]></variableExpression>
 	</variable>
 	<group name="Cliente">
@@ -127,11 +139,11 @@ c.dni,cc.id]]>
 					<reportElement x="0" y="9" width="555" height="1" uuid="48ad22af-5893-40c9-b30c-25d1e5943baf"/>
 				</line>
 				<textField>
-					<reportElement x="397" y="49" width="159" height="33" uuid="d9dc2ff9-fc5e-41a7-bd1b-88194426c631"/>
-					<textElement textAlignment="Justified">
-						<font size="18"/>
+					<reportElement x="420" y="49" width="100" height="34" uuid="3cd2037a-64aa-4c43-add4-6972e638469a"/>
+					<textElement>
+						<font size="24"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$V{saldo_Cuenta_2}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{saldo_Cuenta_6}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
